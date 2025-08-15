@@ -346,7 +346,7 @@ npx hardhat coverage
 
 ## Deployment
 
-### Safe Multi-sig Deployment
+### Safe Multi-sig Deployment (Mainnet)
 
 The recommended deployment method uses Safe multi-signature wallets for enhanced security.
 
@@ -364,7 +364,7 @@ Clone the repository and install dependencies:
 git clone --recurse-submodules https://github.com/CosineLabsHQ/core.git
 cd core
 npm install
-cp .env.example .env
+cp .env.safe.example .env
 ```
 
 Configure environment variables in `.env`:
@@ -382,7 +382,7 @@ ETHERSCAN_API_KEY="your_etherscan_api_key"     # For contract verification (mult
 
 Update deployment parameters in `scripts/safe/utils/deployment.ts` according to your target chain:
 
-```javascript
+```typescript
 const args = {
   tokens: [
     {
@@ -439,6 +439,72 @@ DEPLOYED_ADDRESS=0x889712abd70699456F6Fe403B5066e5796FA1050 npx hardhat run scri
 ```
 
 > **Note:** Replace `0x889712abd70699456F6Fe403B5066e5796FA1050` with your actual deployed contract address from the deployment output.
+
+### Hardhat Ignition Deployment (Testnet)
+
+Alternative deployment method using Hardhat Ignition, suitable for development and testing environments.
+
+#### Setup
+
+Clone the repository and install dependencies:
+
+```bash
+git clone --recurse-submodules https://github.com/CosineLabsHQ/core.git
+cd core
+npm install
+cp .env.ignition.example .env
+```
+
+Configure environment variables in `.env`:
+
+```bash
+CHAIN_ID=97                                    # Target chain ID (e.g., 97 for BSC Testnet)
+CHAIN_RPC_URL="https://your-rpc-endpoint"      # RPC endpoint URL
+PRIVATE_KEY="your_private_key_here"            # Deployer private key
+ETHERSCAN_API_KEY="your_etherscan_api_key"     # For contract verification
+```
+
+#### Configuration
+
+Update deployment parameters in `ignition/modules/Core.ts` according to your target chain:
+
+```typescript
+const core = instance.contract('Core', [
+  [
+    {
+      token: '0x5Bc72e927B8E9d7D4785474bC4dB6CF2615f3f79', // USDT (BSC Testnet example)
+      minAmount: ethers.parseUnits('0.5', 6),
+      maxAmount: ethers.parseUnits('1000', 6)
+    },
+    {
+      token: '0x3d4E32d10E3BDae808551E0205B46Aa8543D2EB7', // USDC (BSC Testnet example)
+      minAmount: ethers.parseUnits('0.5', 6),
+      maxAmount: ethers.parseUnits('1000', 6)
+    },
+    {
+      token: '0x7adC5d6a00d6b18BB7f95f0E7dD9d102b02e1E49', // DAI (BSC Testnet example)
+      minAmount: ethers.parseUnits('0.5', 6),
+      maxAmount: ethers.parseUnits('1000', 6)
+    }
+  ],
+  ['0xf51ecc190b29816fb2ab710615837c67b1e70a5e'], // Authorized relayer addresses
+  '0x000000000022D473030F116dDEE9F6B43aC78BA3', // Uniswap Permit2 (same across chains)
+  '0x4077f2b63aDd0BE9D1e332a26c15D2Decf1C3792', // Payment recipient address
+  '0x8FccCF3CFaF5772F6F6380044D40763567e80B4c' // Contract owner address
+]);
+```
+
+> **Important:** Update token addresses, relayer addresses, recipient, and owner addresses to match your target chain. BSC Testnet addresses are shown as examples.
+
+#### Deployment Commands
+
+Deploy and verify the contract in a single command:
+
+```bash
+npx hardhat ignition deploy ignition/modules/Core.ts --network custom --verify
+```
+
+The deployment will automatically handle contract verification if the `--verify` flag is provided and `ETHERSCAN_API_KEY` is configured.
 
 ## Acknowledgments
 
