@@ -29,11 +29,6 @@ export const deployFixture = async () => {
   await token3.mint(user2.address, ethers.parseUnits('100000', 18));
   await token4.mint(user2.address, ethers.parseUnits('100000', 18));
 
-  // await token1.mint(recipient.address, ethers.parseUnits('100000', 18));
-  // await token2.mint(recipient.address, ethers.parseUnits('100000', 18));
-  // await token2.mint(recipient.address, ethers.parseUnits('100000', 18));
-  // await token3.mint(recipient.address, ethers.parseUnits('100000', 18));
-
   const tokens = [
     {
       token: await token1.getAddress(),

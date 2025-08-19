@@ -45,4 +45,17 @@ describe('Address Management', function () {
       expect(await core.connect(owner1).owner()).to.be.eq(ethers.ZeroAddress);
     });
   });
+
+  describe('Should get tokens and relayers', function () {
+    it('getTokens', async function () {
+      const { core, user1, tokens } = await loadFixture(deployFixture);
+      const expectedTokens = tokens.map((t) => [t.token, t.minAmount, t.maxAmount]);
+      expect(await core.connect(user1).getTokens()).to.deep.equal(expectedTokens);
+    });
+
+    it('getRelayers', async function () {
+      const { core, user1, relayers } = await loadFixture(deployFixture);
+      expect(await core.connect(user1).getRelayers()).to.deep.equal(relayers);
+    });
+  });
 });
