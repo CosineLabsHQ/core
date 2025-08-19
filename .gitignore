@@ -17,3 +17,5 @@ node_modules
 ignition/deployments/
 
 /Bk.sol
+
+.DS_Store

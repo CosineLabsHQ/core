@@ -155,6 +155,24 @@ contract Core is Ownable, Pausable, ReentrancyGuard, Request, EIP2612Request, Pe
     }
 
     /**
+     * @notice Retrieves the list of supported tokens.
+     * @dev Returns the array of tokens that are currently stored in the contract.
+     * @return An array of `ICore.Token` structs representing the supported tokens.
+     */
+    function getTokens() external view returns (ICore.Token[] memory) {
+        return tokens;
+    }
+
+    /**
+     * @notice Retrieves the list of authorized relayers.
+     * @dev Returns the array of relayer addresses that are authorized within this contract.
+     * @return An array of `address` values representing the authorized relayers.
+     */
+    function getRelayers() external view returns (address[] memory) {
+        return relayers;
+    }
+
+    /**
      * @notice Pauses all contract operations that are sensitive to state changes.
      * @dev Only callable by the contract owner. Useful in case of emergencies.
      */
