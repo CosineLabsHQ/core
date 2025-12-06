@@ -1,0 +1,54 @@
+name: CI Status Badge
+
+on:
+  workflow_run:
+    workflows: ['Build Badge', 'Coverage Badge']
+    types:
+      - completed
+
+jobs:
+  ci-status-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Authenticate using GitHub Token
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://${GITHUB_ACTOR}:${GH_TOKEN}@github.com/${{ github.repository }}.git
+
+      - name: Determine workflows status
+        id: status
+        run: |
+          if [[ "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
+            echo "status=passing" >> "$GITHUB_OUTPUT"
+            echo "color=green" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            echo "color=red" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create badges directory (if not exists)
+        run: mkdir -p badges
+
+      - name: Generate CI Badge
+        uses: emibcn/badge-action@v2.0.3
+        with:
+          label: 'CI'
+          status: '${{ steps.status.outputs.status }}'
+          color: '${{ steps.status.outputs.color }}'
+          path: 'badges/ci.svg'
+
+      - name: Commit and Push CI Badge
+        run: |
+          git checkout -B ci-badge
+          git add badges/ci.svg
+          git commit -m "chore: Update ci badge [skip ci]" || echo "No changes to commit"
+          git push -f origin ci-badge

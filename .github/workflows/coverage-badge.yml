@@ -1,0 +1,60 @@
+name: Coverage Badge
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  coverage-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+          persist-credentials: false
+
+      - name: Authenticate using GitHub Token
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://${GITHUB_ACTOR}:${GH_TOKEN}@github.com/${{ github.repository }}.git
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+
+      - name: Generate coverage report
+        run: npx hardhat coverage
+
+      - name: Extract coverage via JS script (coverage.js)
+        id: cov
+        run: |
+          COVERAGE=$(node ./coverage.js)
+          echo "coverage=$COVERAGE" >> "$GITHUB_OUTPUT"
+
+      - name: Create badges directory (if not exists)
+        run: mkdir -p badges
+
+      - name: Generate Badge SVG
+        uses: emibcn/badge-action@v2.0.3
+        with:
+          label: 'coverage'
+          status: '${{ steps.cov.outputs.coverage }}'
+          color: 'blue'
+          path: 'badges/coverage.svg'
+
+      - name: Commit and Push Coverage Badge
+        run: |
+          git checkout -B coverage-badge
+          git add badges/coverage.svg
+          git commit -m "chore: Update coverage badge [skip ci]" || echo "No changes to commit"
+          git push -f origin coverage-badge
