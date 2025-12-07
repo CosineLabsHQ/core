@@ -511,7 +511,7 @@ The deployment will automatically handle contract verification if the `--verify`
 - Smart contracts: [Solidity](https://soliditylang.org)
 - Permit standards: [EIP-2612](https://eips.ethereum.org/EIPS/eip-2612), [Permit2](https://github.com/Uniswap/permit2)
 - Request signing: [EIP-712](https://eips.ethereum.org/EIPS/eip-712)
-- Relayer infrastructure: [openzeppelin-contracts Relayer](https://github.com/openzeppelin-contracts/openzeppelin-contracts-relayer)
+- Relayer infrastructure: [openzeppelin-contracts Relayer](https://github.com/OpenZeppelin/openzeppelin-relayer)
 
 ## License
 
